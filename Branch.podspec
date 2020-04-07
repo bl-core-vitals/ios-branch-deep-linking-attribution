@@ -27,6 +27,7 @@ Use the Branch SDK (branch.io) to create and power the links that point back to 
 
   s.subspec 'Core' do |core|
     core.source_files = source_files
+    core.public_header_files = 'Branch-SDK/Branch-SDK/**/*.h'
     core.frameworks = 'AdSupport', 'MobileCoreServices', 'SafariServices', 'WebKit', 'iAd'
   end
 
