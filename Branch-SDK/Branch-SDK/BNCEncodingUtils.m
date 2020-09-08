@@ -171,7 +171,6 @@ NSString* BNCWireFormatFromString(NSString *string) {
             continue;
         }
         
-        NSString *key = key;
         NSString *value = nil;
         BOOL string = YES;
         

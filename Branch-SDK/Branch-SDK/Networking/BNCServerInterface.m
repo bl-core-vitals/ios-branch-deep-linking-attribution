@@ -551,11 +551,12 @@ exit:
     // Instrumentation metrics
     self.requestEndpoint = [self.preferenceHelper getEndpointFromURL:url];
 
+    __weak typeof(self) weakSelf = self;
     [self genericHTTPRequest:request
                  retryNumber:retryNumber
                     callback:callback
                 retryHandler:^ NSURLRequest *(NSInteger lastRetryNumber) {
-        return [self preparePostRequest:extendedParams url:url key:key retryNumber:lastRetryNumber+1];
+        return [weakSelf preparePostRequest:extendedParams url:url key:key retryNumber:lastRetryNumber+1];
     }];
 }
 
@@ -606,14 +607,16 @@ exit:
             if (retryNumber < self.preferenceHelper.retryCount && isRetryableStatusCode) {
                 dispatch_time_t dispatchTime =
                     dispatch_time(DISPATCH_TIME_NOW, self.preferenceHelper.retryInterval * NSEC_PER_SEC);
+                __weak typeof(self) weakSelf = self;
                 dispatch_after(dispatchTime, dispatch_get_main_queue(), ^{
                     if (retryHandler) {
                         BNCLogDebug(@"Retrying request with url %@", request.URL.relativePath);
                         // Create the next request
                         NSURLRequest *retryRequest = retryHandler(retryNumber);
-                        [self genericHTTPRequest:retryRequest
-                                     retryNumber:(retryNumber + 1)
-                                        callback:callback retryHandler:retryHandler];
+                        [weakSelf genericHTTPRequest:retryRequest
+                                         retryNumber:(retryNumber + 1)
+                                            callback:callback
+                                        retryHandler:retryHandler];
                     }
                 });
                 
